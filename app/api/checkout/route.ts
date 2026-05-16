@@ -3,17 +3,16 @@ import { NextResponse } from 'next/server'
 
 export async function POST() {
   try {
-    const stripe = new Stripe('REMOVED')
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: [{ price: 'price_1TXTvGCqyVOjGBTqr94J6NRY', quantity: 1 }],
-      success_url: 'https://vela-one-vert.vercel.app/?success=true',
-      cancel_url: 'https://vela-one-vert.vercel.app/',
+      line_items: [{ price: process.env.STRIPE_FOUNDING_PRICE_ID!, quantity: 1 }],
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
     })
     return NextResponse.json({ url: session.url })
-  } catch (err) {
-    console.error('Stripe error:', JSON.stringify(err))
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
   }
 }
