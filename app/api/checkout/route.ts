@@ -11,13 +11,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const { tier } = await req.json()
-    if (!tier || !['standard', 'premium'].includes(tier)) {
+    if (!tier || !['premium', 'vip'].includes(tier)) {
       return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
     }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-    const priceId = tier === 'standard'
-      ? process.env.STRIPE_STANDARD_PRICE_ID!
-      : process.env.STRIPE_PREMIUM_PRICE_ID!
+    const priceId = tier === 'premium'
+      ? process.env.STRIPE_PREMIUM_PRICE_ID!
+      : process.env.STRIPE_VIP_PRICE_ID!
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
