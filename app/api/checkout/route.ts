@@ -29,8 +29,9 @@ export async function POST(req: NextRequest) {
     })
     return NextResponse.json({ url: checkoutSession.url })
   } catch (e) {
-    console.error('Checkout error:', e)
-    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('Stripe error:', msg, e)
+    return NextResponse.json({ error: 'Checkout failed', detail: msg }, { status: 500 })
   }
 }
 
